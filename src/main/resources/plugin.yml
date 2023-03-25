@@ -1,0 +1,10 @@
+name: LavaLocationManager
+version: '${project.version}'
+main: club.lavaer.lavalocationmanager.LavaLocationManager
+author: Lava_er
+
+commands:
+  LocationManager:
+    usage: "/<>"
+    description: "LocationManager"
+    aliases: ["lm", "llm", "vlm"]
