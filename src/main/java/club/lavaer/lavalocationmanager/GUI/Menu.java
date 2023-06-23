@@ -22,14 +22,11 @@ public class Menu {
     public static final String TITLE = "地标菜单";
 
     //注册物品的方法
-    public ItemStack ItemReg(Material material, String name, String loreqw){
+    public ItemStack ItemReg(Material material, String name, ArrayList<String> lorearr){
         ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(name);
-        ArrayList<String> arr =  new ArrayList<String>();
-        arr.add(loreqw);
-        System.out.println(arr);
-        itemMeta.setLore(arr);
+        itemMeta.setLore(lorearr);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
@@ -41,40 +38,49 @@ public class Menu {
         //注册物品
         int[] ph = new int[]{0, 1, 2, 3, 5, 6, 7, 8, 46, 47, 48, 50, 51, 52};
         for(int i : ph){
-            components.setItem(i, ItemReg(Material.STAINED_GLASS_PANE," "," 123\n 123"));
+            components.setItem(i, ItemReg(Material.STAINED_GLASS_PANE," ",null));
         }
+
+        ArrayList<LMWarp> AllWarps = mg.readAllWarps();
+
         DecimalFormat df = new DecimalFormat("0.00");
-
         int index = 0;
-        for(LMWarp warp : mg.readAllWarps()){
+        for(LMWarp warp : AllWarps){
             index ++;
-
-
-            Iterator<UUID> iterate = warp.coops.iterator();
             StringBuilder coopsInformation = new StringBuilder();
 
-            //使用Iterator的方法访问元素
             coopsInformation.append("| ");
-            while(iterate.hasNext()){
-                coopsInformation.append(Bukkit.getOfflinePlayer(iterate.next()).getName()).append(" | ");
+            for(UUID i : warp.coops){
+                coopsInformation.append(Bukkit.getOfflinePlayer(i).getName()).append(" | ");
             }
 
-
-            String lorere = "\n" +
-                    "------------------------\n" +
-                    "创建者: "+ Bukkit.getOfflinePlayer(warp.author).getName() +"\n" +
-                    "协作者: " + coopsInformation +"\n" +
-                    "获赞数: "+ warp.getLikeCount() +"\n" +
-                    "坐标: "+df.format(warp.location.getX()) + " / " + df.format(warp.location.getY()) + " / " + df.format(warp.location.getZ()) + "\n" +
-                    "创建时间: "+ warp.date +"\n" +
-                    "------------------------\n" +
-                    "\n" +
-                    "左键传送\n" +
-                    "右键点赞\n";
-            ItemStack itemStack = ItemReg(Material.EYE_OF_ENDER, warp.name, lorere);
+            ArrayList<String> lore = new ArrayList<String>();
+            lore.add(" ");
+            lore.add("------------------------");
+            lore.add("创建者: "+ Bukkit.getOfflinePlayer(warp.author).getName() +"");
+            lore.add("协作者: " + coopsInformation +"");
+            lore.add("获赞数: "+ warp.getLikeCount() +"");
+            lore.add("坐标: "+df.format(warp.location.getX()) + " / " + df.format(warp.location.getY()) + " / " + df.format(warp.location.getZ()) + "");
+            lore.add("创建时间: "+ warp.date +"");
+            lore.add("------------------------");
+            lore.add(" ");
+            lore.add("左键传送");
+            lore.add("右键点赞");
+            ItemStack itemStack = ItemReg(Material.EYE_OF_ENDER, warp.name, lore);
             components.setItem((8+index), itemStack);
         }
 
+        Collections.sort(AllWarps);
+        ArrayList<String> Dlore = new ArrayList<String>();
+        Dlore.add("---------点赞排行---------");
+        int tmp = Math.min(AllWarps.size(), 10);
+        System.out.println(tmp);
+        for(int i = 0; i <= (tmp-1); i++){
+            Dlore.add("  " + (i+1) + ". " + AllWarps.get(i).name + "  by " + Bukkit.getOfflinePlayer(AllWarps.get(i).author).getName() + "  点赞数:"+ AllWarps.get(i).getLikeCount() );
+        }
+
+        Dlore.add("------------------------");
+        components.setItem(4, ItemReg(Material.DIAMOND_BLOCK,"传送点点赞数排行榜",Dlore));
     }
 
     //打开菜单

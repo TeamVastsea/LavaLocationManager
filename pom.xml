@@ -6,7 +6,7 @@
 
     <groupId>club.lavaer</groupId>
     <artifactId>LavaLocationManager</artifactId>
-    <version>1.0.0</version>
+    <version>0.2.2</version>
     <packaging>jar</packaging>
 
     <name>LavaLocationManager</name>

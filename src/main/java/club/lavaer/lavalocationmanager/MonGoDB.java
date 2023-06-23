@@ -24,12 +24,11 @@ public class MonGoDB {
         try {
             client = new MongoClient(ip, port);
         } catch (NullPointerException e) {
-            //When you end up here, the server the db is running on could not be found!
             System.out.println("无法连接至数据库!");
             e.printStackTrace();
             return false;
         }
-        //获取名为 "mcserver "的数据库
+        //获取名为 "LMC" 的数据库
         //如果它不存在，将被自动创建, 一旦你在其中保存了一些东西
         mcserverdb = client.getDB("LMC");
         //获取数据库中的集合。

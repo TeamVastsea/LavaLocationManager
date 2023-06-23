@@ -20,18 +20,19 @@ public class MenuListener implements Listener {
 
         if (inv.getTitle().equals(Menu.TITLE)){
             e.setCancelled(true);
-            if (e.getRawSlot() < 0 || e.getRawSlot() > e.getInventory().getSize()) {
+            if (e.getRawSlot() < 0 || e.getRawSlot() > e.getInventory().getSize() || e.getCurrentItem() == null) {
                 return;
             }
-
             ItemStack clickedItem = e.getCurrentItem();
             String name = clickedItem.getItemMeta().getDisplayName();
+
             if(mg.readWarp(name) != null){
                 LMWarp lmWarp = mg.readWarp(name);
                 if(e.isLeftClick()){
                     player.teleport(lmWarp.location);
                 }else if(e.isRightClick()){
                     if(mg.LikeWarp(name,player.getUniqueId())){
+                        lmWarp = mg.readWarp(name);
                         player.sendMessage(ChatColor.GREEN + "点赞成功！当前本传送点赞数：" + ChatColor.WHITE + lmWarp.getLikeCount());
                         new Menu(player).open();
                     }else{
