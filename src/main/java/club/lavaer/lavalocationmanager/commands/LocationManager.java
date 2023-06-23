@@ -1,5 +1,6 @@
 package club.lavaer.lavalocationmanager.commands;
 
+import club.lavaer.lavalocationmanager.GUI.Menu;
 import club.lavaer.lavalocationmanager.LMWarp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,9 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 import static club.lavaer.lavalocationmanager.LavaLocationManager.mg;
 
@@ -41,7 +40,18 @@ public class LocationManager implements CommandExecutor {
                         );
                         break;
                     }
-
+                    case "like": {
+                        if (args.length >= 2) {
+                            if(mg.LikeWarp(args[1], player.getUniqueId())){
+                                player.sendMessage(ChatColor.GREEN + "点赞成功！当前本传送点赞数： " + ChatColor.WHITE + mg.readWarp(args[1]).getLikeCount());
+                            }else{
+                                player.sendMessage(ChatColor.RED + "你已经点过赞了！");
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "地标名不得为空");
+                        }
+                        break;
+                    }
                     case "setwarp": {
                         //设置地标
                         if (args.length >= 2) {
@@ -60,17 +70,32 @@ public class LocationManager implements CommandExecutor {
                             Date dNow = new Date();
                             String date = ft.format(dNow);
 
+                            int i = 1;
+                            ArrayList<UUID> coops = new ArrayList<UUID>();
+                            while(args.length >= (i+2)){
+                                coops.add(Bukkit.getOfflinePlayer(args[i+1]).getUniqueId());
+                                i++;
+                            }
 
                             //将地标存储到数据库
                             Location location = player.getLocation();
-                            LMWarp warp = new LMWarp(WarpName,location,date,0,player.getUniqueId());
+                            LMWarp warp = new LMWarp(WarpName,location,date,new ArrayList<UUID>(),coops,player.getUniqueId());
                             mg.storeWarp(warp.name, warp);
+
+                            Iterator<UUID> iterate = coops.iterator();
+                            StringBuilder coopsInformation = new StringBuilder();
+
+                            //使用Iterator的方法访问元素
+                            coopsInformation.append("| ");
+                            while(iterate.hasNext()){
+                                coopsInformation.append(Bukkit.getOfflinePlayer(iterate.next()).getName()).append(" | ");
+                            }
 
                             player.sendMessage("\n" +
                                     "------------------------ \n" +
                                     "您创建了一个地标 \n" +
                                     "创建者: " + player.getName() + " \n" +
-                                    "协作者:  warp Co-Author list \n" +
+                                    "协作者:  " + coopsInformation + " \n" +
                                     "名称: " + WarpName + " \n" +
                                     "坐标: " + df.format(location.getX()) + " / " + df.format(location.getY()) + " / " + df.format(location.getZ()) + " \n" +
                                     "创建时间 " + date + " \n" +
@@ -91,7 +116,7 @@ public class LocationManager implements CommandExecutor {
                             index ++;
                             player.sendMessage(Bukkit.getOfflinePlayer(warp.author).getName() +" 的 "+ warp.name +"\n");
                         }
-                        player.sendMessage("以上, 共" + index + "个");
+                        player.sendMessage("以上共" + index + "个,更多信息请查询GUI");
                         break;
                     }
 
@@ -138,7 +163,7 @@ public class LocationManager implements CommandExecutor {
                     }
                 }
             }else{
-                //打开GUI
+                new Menu(player).open();
             }
 
 

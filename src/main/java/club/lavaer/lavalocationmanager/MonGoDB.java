@@ -6,6 +6,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import javax.swing.text.Document;
 import java.net.UnknownHostException;
@@ -24,14 +25,14 @@ public class MonGoDB {
             client = new MongoClient(ip, port);
         } catch (NullPointerException e) {
             //When you end up here, the server the db is running on could not be found!
-            System.out.println("Could not connect to database!");
+            System.out.println("无法连接至数据库!");
             e.printStackTrace();
             return false;
         }
         //获取名为 "mcserver "的数据库
         //如果它不存在，将被自动创建, 一旦你在其中保存了一些东西
         mcserverdb = client.getDB("LMC");
-        //获取数据库 "mcserver "中名为 "player "的集合。
+        //获取数据库中的集合。
         //相当于MySQL中的表，你可以在这里存储对象
         warps = mcserverdb.getCollection("warps");
 
@@ -57,18 +58,41 @@ public class MonGoDB {
         obj.put("location", location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ() + "/" + location.getWorld().getName() );
         obj.put("date", lmWarp.date);
         obj.put("stars", lmWarp.stars);
+        obj.put("coops", lmWarp.coops);
         obj.put("author", lmWarp.author.toString());
 
         warps.insert(obj);
     }
+    public boolean LikeWarp(String name, UUID uuid){
+        LMWarp lmWarp = readWarp(name);
+
+        if(!lmWarp.Like(uuid)){
+            return false;
+        }
+
+        Location location = lmWarp.location;
+        DBObject objOld = new BasicDBObject("warp", name);
+        DBObject obj = new BasicDBObject("warp", name);
+        obj.put("name", lmWarp.name);
+        obj.put("location", location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ() + "/" + location.getWorld().getName() );
+        obj.put("date", lmWarp.date);
+        obj.put("stars", lmWarp.stars);
+        obj.put("coops", lmWarp.coops);
+        obj.put("author", lmWarp.author.toString());
+
+        warps.update(objOld,obj);
+        return true;
+    }
+    public void DelWarp(String name){
+        DBObject oldobj = new BasicDBObject("warp", name);
+        //warps.update(oldobj, {});
+    }
     public LMWarp readWarp(String name){
         DBObject obj = new BasicDBObject("warp", name);
-
         DBObject found = warps.findOne(obj);
         if(found == null){
             return null;
         }
-
         return DBOtoLMW(found) ;
     }
     public ArrayList<LMWarp> readAllWarps(){
@@ -86,6 +110,6 @@ public class MonGoDB {
         String[] parts = LocStr.split("/");
         Location location = new Location(Bukkit.getServer().getWorld(parts[3]), Integer.parseInt(parts[0]),
                 Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
-        return new LMWarp((String)found.get("name"),location,(String)found.get("date"),(int)found.get("stars"),UUID.fromString((String)found.get("author"))) ;
+        return new LMWarp((String)found.get("name"),location,(String)found.get("date"),(ArrayList<UUID>) found.get("stars"),(ArrayList<UUID>) found.get("coops"),UUID.fromString((String)found.get("author"))) ;
     }
 }

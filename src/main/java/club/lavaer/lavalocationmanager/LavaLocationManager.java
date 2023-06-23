@@ -1,6 +1,8 @@
 package club.lavaer.lavalocationmanager;
 
+import club.lavaer.lavalocationmanager.GUI.MenuListener;
 import club.lavaer.lavalocationmanager.commands.LocationManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,6 +23,7 @@ public final class LavaLocationManager extends JavaPlugin {
 
         mg.connect("localhost", 27017);     //连接数据库
         this.getCommand("LocationManager").setExecutor(new LocationManager());
+        Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
 
         log.info("[LavaLocationManager] LavaLocationManager loaded.");
     }
