@@ -25,6 +25,12 @@ public final class LavaLocationManager extends JavaPlugin {
         this.getCommand("LocationManager").setExecutor(new LocationManager());
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
 
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new LmPapiExpansion(this).register();
+        } else {
+            getLogger().warning("Could not find PlaceholderAPI! This plugin is required.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
         log.info("[LavaLocationManager] LavaLocationManager loaded.");
     }
 

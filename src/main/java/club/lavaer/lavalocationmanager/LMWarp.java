@@ -40,6 +40,25 @@ public class LMWarp implements Comparable<LMWarp>{
         this.stars.add(uuid);
         return true;
     }
+    public boolean changeCoop(UUID uuid, boolean flag){
+        if(flag){
+            for (UUID i : this.coops) {
+                if(i.equals(uuid)){
+                    return false;
+                }
+            }
+            this.coops.add(uuid);
+            return true;
+        }else{
+            for (UUID i : this.coops) {
+                if(i.equals(uuid)){
+                    this.coops.remove(uuid);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public int getLikeCount(){
         int index = 0;
         for (UUID i : this.stars) {

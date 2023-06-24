@@ -3,6 +3,8 @@ version: '${project.version}'
 main: club.lavaer.lavalocationmanager.LavaLocationManager
 author: Lava_er
 
+softdepend: [PlaceholderAPI]
+
 commands:
   LocationManager:
     usage: "/<>"

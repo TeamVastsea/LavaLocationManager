@@ -2,14 +2,9 @@ package club.lavaer.lavalocationmanager;
 
 import com.mongodb.*;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCursor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
-import javax.swing.text.Document;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -37,16 +32,17 @@ public class MonGoDB {
 
         return true;
     }
-    public void updateWarpLoc(String name, Location location) {
+    public boolean updateWarpLoc(UUID uniqueId, String name, Location location) {
 
         DBObject r = new BasicDBObject("warp", name);
         DBObject found = warps.findOne(r);
-        if (found == null){
-            return;
+        if (found == null || !DBOtoLMW(found).author.equals(uniqueId)){
+            return false;
         }
         BasicDBObject set = new BasicDBObject("$set", r);
         set.append("$set", new BasicDBObject("location", location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ() + "/" + location.getWorld().getName()));
         warps.update(found, set);
+        return true;
     }
     public void storeWarp(String name, LMWarp lmWarp){
 
@@ -82,9 +78,34 @@ public class MonGoDB {
         warps.update(objOld,obj);
         return true;
     }
-    public void DelWarp(String name){
-        DBObject oldobj = new BasicDBObject("warp", name);
-        //warps.update(oldobj, {});
+    public boolean changeCoop(UUID operator,String name, boolean flag,UUID uuid){
+        LMWarp lmWarp = readWarp(name);
+
+        if(!operator.equals(lmWarp.author) || !lmWarp.changeCoop(uuid,flag)){
+            return false;
+        }
+
+        Location location = lmWarp.location;
+        DBObject objOld = new BasicDBObject("warp", name);
+        DBObject obj = new BasicDBObject("warp", name);
+        obj.put("name", lmWarp.name);
+        obj.put("location", location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ() + "/" + location.getWorld().getName() );
+        obj.put("date", lmWarp.date);
+        obj.put("stars", lmWarp.stars);
+        obj.put("coops", lmWarp.coops);
+        obj.put("author", lmWarp.author.toString());
+
+        warps.update(objOld,obj);
+        return true;
+    }
+    public boolean DelWarp(UUID uniqueId,String name){
+        DBObject r = new BasicDBObject("warp", name);
+        DBObject found = warps.findOne(r);
+        if (found == null || !DBOtoLMW(found).author.equals(uniqueId)){
+            return false;
+        }
+        warps.remove(found);
+        return true;
     }
     public LMWarp readWarp(String name){
         DBObject obj = new BasicDBObject("warp", name);

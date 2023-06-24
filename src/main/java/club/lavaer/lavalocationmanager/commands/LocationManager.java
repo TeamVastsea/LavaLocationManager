@@ -5,6 +5,7 @@ import club.lavaer.lavalocationmanager.LMWarp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,8 @@ public class LocationManager implements CommandExecutor {
                                 "列出所有可用地标：/lm list \n" +
                                 "添加协作者: /lm addco <warpSerial> <player> \n" +
                                 "移除地标 /lm rmwarp <warpSerial> \n" +
-                                "移除协作者 /lm rmco <player> \n" +
+                                "移除协作者 /lm rmco <warpSerial> <player> \n" +
+                                "点赞 /lm like <warpSerial> \n" +
                                 "确认 /lm confirm \n"
                         );
                         break;
@@ -127,7 +129,11 @@ public class LocationManager implements CommandExecutor {
                             LMWarp lmWarp = mg.readWarp(WarpName);
 
                             if(lmWarp != null){
-                                mg.updateWarpLoc(WarpName,location);
+                                if(mg.updateWarpLoc(player.getUniqueId(),WarpName,location)){
+                                    player.sendMessage(ChatColor.GREEN + "操作成功");
+                                }else{
+                                    player.sendMessage(ChatColor.RED + "操作失败");
+                                }
                             }else{
                                 player.sendMessage(ChatColor.RED + "地标名不存在");
                             }
@@ -161,9 +167,70 @@ public class LocationManager implements CommandExecutor {
                         break;
 
                     }
+                    case "addco":{
+                        if (args.length >= 3) {
+                            Location location = player.getLocation();
+                            UUID uuid= Bukkit.getOfflinePlayer(args[2]).getUniqueId() ;
+                            String WarpName = args[1];
+                            LMWarp lmWarp = mg.readWarp(WarpName);
+
+                            if(lmWarp != null){
+                                if(mg.changeCoop(player.getUniqueId(), WarpName,true,uuid)){
+                                    player.sendMessage(ChatColor.GREEN + "操作成功");
+                                }else{
+                                    player.sendMessage(ChatColor.RED + "操作失败");
+                                }
+                            }else{
+                                player.sendMessage(ChatColor.RED + "地标名不存在");
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "参数错误");
+                        }
+                        break;
+                    }
+                    case "rmco":{
+                        if (args.length >= 3) {
+                            Location location = player.getLocation();
+                            UUID uuid= Bukkit.getOfflinePlayer(args[2]).getUniqueId() ;
+                            String WarpName = args[1];
+                            LMWarp lmWarp = mg.readWarp(WarpName);
+
+                            if(lmWarp != null){
+                                if(mg.changeCoop(player.getUniqueId(),WarpName,false,uuid)){
+                                    player.sendMessage(ChatColor.GREEN + "操作成功");
+                                }else{
+                                    player.sendMessage(ChatColor.RED + "操作失败");
+                                }
+                            }else{
+                                player.sendMessage(ChatColor.RED + "地标名不存在");
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "参数错误");
+                        }
+                        break;
+                    }
+                    case "rmwarp":{
+                        if (args.length >= 2) {
+                            String WarpName = args[1];
+                            LMWarp lmWarp = mg.readWarp(WarpName);
+
+                            if(lmWarp != null){
+                                if(mg.DelWarp(player.getUniqueId(),WarpName)){
+                                    player.sendMessage(ChatColor.GREEN + "操作成功");
+                                }else{
+                                    player.sendMessage(ChatColor.RED + "操作失败");
+                                }
+                            }else{
+                                player.sendMessage(ChatColor.RED + "地标名不存在");
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "地标名不得为空");
+                        }
+                        break;
+                    }
                 }
             }else{
-                new Menu(player).open();
+                new Menu(player,1).open();
             }
 
 

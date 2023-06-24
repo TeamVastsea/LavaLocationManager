@@ -6,7 +6,7 @@
 
     <groupId>club.lavaer</groupId>
     <artifactId>LavaLocationManager</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
     <packaging>jar</packaging>
 
     <name>LavaLocationManager</name>
@@ -55,12 +55,20 @@
 
     <repositories>
         <repository>
+            <id>central</id>
+            <url>http://host:port/content/groups/public</url>
+        </repository>
+        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
     </repositories>
 
@@ -87,5 +95,18 @@
             <artifactId>mongo-java-driver</artifactId>
             <version>3.12.12</version>
         </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.3</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>http://host:port/content/groups/public</url>
+        </pluginRepository>
+    </pluginRepositories>
+
 </project>
