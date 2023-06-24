@@ -5,6 +5,8 @@ import org.bukkit.OfflinePlayer;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.jetbrains.annotations.NotNull;
 
+import static club.lavaer.lavalocationmanager.LavaLocationManager.mg;
+
 public class LmPapiExpansion extends PlaceholderExpansion{
     private final LavaLocationManager plugin;
 
@@ -13,17 +15,17 @@ public class LmPapiExpansion extends PlaceholderExpansion{
     }
 
     @Override
-    public String getAuthor() {
+    public @NotNull String getAuthor() {
         return "Lavander";
     }
 
     @Override
-    public String getIdentifier() {
-        return "LM";
+    public @NotNull String getIdentifier() {
+        return "lmwarp";
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return "1.0.0";
     }
 
@@ -34,16 +36,15 @@ public class LmPapiExpansion extends PlaceholderExpansion{
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-        if(params.equalsIgnoreCase("placeholder1")){
-            return plugin.getConfig().getString("placeholders.placeholder1", "default1");
+        if(params.equalsIgnoreCase("all_likes")){
+            return (mg.getAllLikes() + "");
         }
-        if(params.equalsIgnoreCase("test")){
-            return "233";
+        if(params.equalsIgnoreCase("player_all_likes")){
+            return (mg.getPlayerAllLikes(player.getUniqueId()) + "");
         }
-        if(params.equalsIgnoreCase("placeholder2")) {
-            return plugin.getConfig().getString("placeholders.placeholder2", "default2");
+        if(params.equalsIgnoreCase("player_rank")){
+            return (mg.getRank(player.getUniqueId()) + "");
         }
-
-        return null; // Placeholder is unknown by the Expansion
+        return null;
     }
 }

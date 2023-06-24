@@ -5,8 +5,9 @@ import com.mongodb.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
+
+import static club.lavaer.lavalocationmanager.LavaLocationManager.mg;
 
 public class MonGoDB {
     private DBCollection warps;
@@ -43,6 +44,40 @@ public class MonGoDB {
         set.append("$set", new BasicDBObject("location", location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ() + "/" + location.getWorld().getName()));
         warps.update(found, set);
         return true;
+    }
+    public int getAllLikes(){
+        int x = 0;
+        ArrayList<LMWarp> AllWarps = mg.readAllWarps();
+        for(LMWarp i : AllWarps){
+            x+=i.getLikeCount();
+        }
+        return x;
+    }
+    public int getPlayerAllLikes(UUID uuid){
+        int x = 0;
+        ArrayList<LMWarp> AllWarps = mg.readAllWarps();
+        for(LMWarp i : AllWarps){
+            if(i.author.equals(uuid)) x += i.getLikeCount();
+        }
+        return x;
+    }
+    public int getRank(UUID uuid){
+        Map likesmap = new HashMap();
+        ArrayList<LMWarp> AllWarps = mg.readAllWarps();
+        for(LMWarp i : AllWarps){
+            if(!likesmap.containsKey(i.author))likesmap.put(i.author, getPlayerAllLikes(i.author));
+        }
+
+        List<Map.Entry<UUID, Integer>> list = new ArrayList<Map.Entry<UUID, Integer>>(likesmap.entrySet()); //转换为list
+        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+
+        for(int i = 0; i< list.size(); i++){
+            if(list.get(i).getKey().equals(uuid)){
+                return (i+1);
+            }
+        }
+
+        return -1;
     }
     public void storeWarp(String name, LMWarp lmWarp){
 
