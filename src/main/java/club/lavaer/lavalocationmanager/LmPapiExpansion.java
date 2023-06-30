@@ -1,18 +1,15 @@
 package club.lavaer.lavalocationmanager;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.jetbrains.annotations.NotNull;
 
-import static club.lavaer.lavalocationmanager.LavaLocationManager.mg;
+import static club.lavaer.lavalocationmanager.LavaLocationManager.DataBase;
 
 public class LmPapiExpansion extends PlaceholderExpansion{
     private final LavaLocationManager plugin;
 
-    public LmPapiExpansion(LavaLocationManager plugin) {
-        this.plugin = plugin;
-    }
+    public LmPapiExpansion(LavaLocationManager plugin) { this.plugin = plugin; }
 
     @Override
     public @NotNull String getAuthor() {
@@ -30,20 +27,17 @@ public class LmPapiExpansion extends PlaceholderExpansion{
     }
 
     @Override
-    public boolean persist() {
-        return true; // This is required or else PlaceholderAPI will unregister the Expansion on reload
-    }
+    public boolean persist() { return true; }
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-        if(params.equalsIgnoreCase("all_likes")){
-            return (mg.getAllLikes() + "");
-        }
-        if(params.equalsIgnoreCase("player_all_likes")){
-            return (mg.getPlayerAllLikes(player.getUniqueId()) + "");
-        }
-        if(params.equalsIgnoreCase("player_rank")){
-            return (mg.getRank(player.getUniqueId()) + "");
+        switch (params.toLowerCase()){
+            case "all_likes":
+                return DataBase.getAllLikes() + "";
+            case "player_all_likes":
+                return DataBase.getPlayerAllLikes(player.getUniqueId()) + "";
+            case "player_rank" :
+                return DataBase.getRank(player.getUniqueId()) + "";
         }
         return null;
     }

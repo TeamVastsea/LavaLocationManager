@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 
-import static club.lavaer.lavalocationmanager.LavaLocationManager.mg;
+import static club.lavaer.lavalocationmanager.LavaLocationManager.DataBase;
 
 public class MenuListener implements Listener {
     @EventHandler
@@ -25,30 +25,33 @@ public class MenuListener implements Listener {
 
             int i = Integer.parseInt(inv.getTitle().substring(inv.getTitle().length()-1));
 
-            if (e.getRawSlot() < 0 || e.getRawSlot() > e.getInventory().getSize() || e.getCurrentItem() == null) {
+            if (e.getRawSlot() < 0 || e.getRawSlot() > e.getInventory().getSize() || e.getCurrentItem() == null)
                 return;
-            }
+
             ItemStack clickedItem = e.getCurrentItem();
             String name = clickedItem.getItemMeta().getDisplayName();
-            if(Objects.equals(name, "Next Page")){
+
+            if(Objects.equals(name, "Next Page"))
                 new Menu(player,i+1).open();
-            }else if(Objects.equals(name, "Last Page")){
+            else if(Objects.equals(name, "Last Page"))
                 new Menu(player,i-1).open();
+
+            if(DataBase.readWarp(name) == null){
+                return;
             }
-            if(mg.readWarp(name) != null){
-                LMWarp lmWarp = mg.readWarp(name);
+                LMWarp lmWarp = DataBase.readWarp(name);
                 if(e.isLeftClick()){
-                    player.teleport(lmWarp.location);
+                    player.teleport(lmWarp.getLocation());
                 }else if(e.isRightClick()){
-                    if(mg.LikeWarp(name,player.getUniqueId())){
-                        lmWarp = mg.readWarp(name);
-                        player.sendMessage(ChatColor.GREEN + "点赞成功！当前本传送点赞数：" + ChatColor.WHITE + lmWarp.getLikeCount());
-                        new Menu(player,1).open();
-                    }else{
+                    if(!DataBase.LikeWarp(name,player.getUniqueId())){
                         player.sendMessage(ChatColor.RED + "你已经点过赞了！");
+                        return;
                     }
+
+                    player.sendMessage(ChatColor.GREEN + "点赞成功！当前本传送点赞数：" + ChatColor.WHITE + lmWarp.getLikeCount());
+                    new Menu(player,1).open();
                 }
-            }
+
         }
     }
 }
