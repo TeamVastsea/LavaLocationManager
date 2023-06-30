@@ -15,16 +15,22 @@ public final class LavaLocationManager extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             getLogger().warning("Could not find PlaceholderAPI! This plugin is required.");
             Bukkit.getPluginManager().disablePlugin(this);
         }
-        if(!DataBase.connect("localhost", 27017, "LMC", "warps")){
-            getLogger().warning("DataBaseError");
+        if(!DataBase.connect(getConfig().getString("mongodb.mongodb_connection_URI"),
+                getConfig().getString("mongodb.database"),
+                getConfig().getString("mongodb.collection"))){
+
+            getLogger().warning("数据库连接出错 本插件已禁用 在配置文件里设置正确的数据库路径");
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
         instance = this;
+
         this.getCommand("LocationManager").setExecutor(new LocationManager());
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
         new LmPapiExpansion(this).register();

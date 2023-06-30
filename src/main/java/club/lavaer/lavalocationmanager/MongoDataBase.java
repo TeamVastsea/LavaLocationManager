@@ -2,6 +2,7 @@ package club.lavaer.lavalocationmanager;
 
 import com.mongodb.*;
 
+import com.mongodb.client.MongoClients;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -14,11 +15,11 @@ public class MongoDataBase {
     private Map LikesMap = new HashMap();
     private List<Map.Entry<UUID, Integer>> SortedLikeList;
 
-    public boolean connect(String ip, int port, String DataBase, String Collection) {
+    public boolean connect(String ConnectionString, String DataBase, String Collection) {
         MongoClient client;
 
         try{
-            client = new MongoClient(ip, port);
+            client = new MongoClient(new MongoClientURI(ConnectionString));
         } catch (NullPointerException e) {
             System.out.println("无法连接至数据库!");
             return false;
@@ -164,5 +165,9 @@ public class MongoDataBase {
         Location location = new Location(Bukkit.getServer().getWorld(parts[3]), Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
 
         return new LMWarp((String)found.get("name"),location,(String)found.get("date"),(ArrayList<UUID>) found.get("stars"),(ArrayList<UUID>) found.get("coops"),UUID.fromString((String)found.get("author"))) ;
+    }
+
+    public String getRankedPlayer(int i) {
+        return (SortedLikeList.get(i-1) != null) ? Bukkit.getOfflinePlayer(SortedLikeList.get(i-1).getKey()).getName() : null;
     }
 }

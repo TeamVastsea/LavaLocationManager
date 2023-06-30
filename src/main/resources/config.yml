@@ -1,0 +1,4 @@
+mongodb:
+  mongodb_connection_URI: "mongodb://localhost:27017"
+  database: "LMC"
+  collection: "warps"
