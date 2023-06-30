@@ -12,7 +12,9 @@ import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
 
 import static club.lavaer.lavalocationmanager.LavaLocationManager.DataBase;
 
@@ -59,7 +61,7 @@ public class LocationManager implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "你已经点过赞了！");
                     break;
                 }
-                player.sendMessage(ChatColor.GREEN + "点赞成功！当前本传送点赞数： " + ChatColor.WHITE + DataBase.readWarp(args[1]).getLikeCount());
+                player.sendMessage(ChatColor.GREEN + "点赞成功！当前本传送点赞数： " + ChatColor.WHITE + DataBase.readWarp(args[1]).getLikeCount() + 1);
                 break;
             }
             case "setwarp": {
@@ -93,7 +95,7 @@ public class LocationManager implements CommandExecutor {
                 DataBase.storeWarp(warp.getName(), warp);
 
                 StringBuilder coopsInformation = new StringBuilder().append("| ");
-                for(UUID uuid : coops) coopsInformation.append(Bukkit.getOfflinePlayer(uuid).getName()).append(" | ");
+                for (UUID uuid : coops) coopsInformation.append(Bukkit.getOfflinePlayer(uuid).getName()).append(" | ");
 
                 String Success = "\n" +
                         "------------------------ \n" +
@@ -234,7 +236,7 @@ public class LocationManager implements CommandExecutor {
 
                 break;
             }
-            default:{
+            default: {
                 player.sendMessage(ChatColor.RED + "未知指令");
                 break;
             }
